@@ -1,0 +1,129 @@
+# ─────────────────────────────────────────────────────────
+#  Self-Correcting RAG  —  Central Configuration
+#  All hardcoded values from your codebase live here.
+# ─────────────────────────────────────────────────────────
+
+# ── LLM (llm/llm.py) ─────────────────────────────────────
+llm:
+  model: llama-3.3-70b-versatile    # used for the final answer — quality matters most here
+  fast_model: llama-3.1-8b-instant  # used for query rewrite / guardrail / evaluator — short
+                                     # yes/no-style outputs where latency matters more than depth
+  temperature: 0.2
+  max_tokens: 1024
+
+# ── Embedding models ──────────────────────────────────────
+embedding:
+  # Used in indexes/embed.py for building the index
+  index_model: BAAI/bge-base-en-v1.5
+  # Used in rag/rag.py for query encoding at runtime
+  query_model: BAAI/bge-base-en-v1.5
+  # NOTE: these should ideally be the same model.
+  # Consider migrating both to BAAI/bge-base-en-v1.5 for consistency.
+
+# ── Chunking (indexes/ingestion.py) ──────────────────────
+chunking:
+  chunk_size: 300                   # words per chunk (default: notes/docs)
+  chunk_overlap: 60                 # word overlap between chunks
+  min_chunk_words: 50               # discard chunks smaller than this
+  # Denser source types get smaller, tighter chunks than full notes.
+  overrides:
+    cheatsheet:
+      chunk_size: 120
+      chunk_overlap: 20
+      min_chunk_words: 15
+    social_post:                    # OCR'd Instagram/LinkedIn screenshots
+      chunk_size: 150
+      chunk_overlap: 30
+      min_chunk_words: 15
+
+# ── Retrieval (rag/rag.py) ────────────────────────────────
+retrieval:
+  top_k: 8                          # k passed to FAISS + BM25
+  relevance_threshold: 1.3          # RELEVANCE_THRESHOLD in rag.py
+  rrf_k: 60                         # RRF constant (60 + rank)
+
+# ── Guardrail (rag/rag.py) ────────────────────────────────
+guardrail:
+  # If the best FAISS distance is already this confident, skip the guardrail
+  # LLM call entirely and auto-pass. DEFAULT DISABLED (null) — a semantically
+  # adjacent-but-wrong query (e.g. "Kubernetes pod autoscaling" against a
+  # corpus that covers scaling/load-balancing generally) can land under a
+  # naive threshold and skip the check that's supposed to catch it. Only
+  # enable this after checking real best_faiss_distance values (via
+  # debug: true) across several genuinely-relevant AND several
+  # plausible-but-out-of-scope questions, and set the threshold below
+  # where the two groups' distances overlap.
+  auto_pass_distance: null
+
+
+# ── Reranker ─────────────────────────────────────────────
+reranker:
+  top_n: 3                          # top_n in rerank()
+  use_cross_encoder: true
+  cross_encoder_model: cross-encoder/ms-marco-MiniLM-L-6-v2
+
+# ── FAISS index (indexes/index.py) ───────────────────────
+faiss:
+  hnsw_m: 32                        # M param for IndexHNSWFlat
+  ef_construction: 200
+  ef_search: 64
+
+# ── Paths ─────────────────────────────────────────────────
+paths:
+  raw_data: data/raw
+  chunks: data/processed/chunks.pkl
+  chunks_with_embeddings: data/processed/chunks_with_embeddings.pkl
+  faiss_index: data/processed/faiss.index
+  bm25_index: data/processed/bm25.pkl
+  eval_output: data/eval_results.json
+
+# ── Ingestion (multi-format) ─────────────────────────────
+ingestion:
+  supported_extensions: [".txt", ".md", ".pdf", ".docx", ".png", ".jpg", ".jpeg"]
+  default_topic: general
+  # OCR is only invoked for image files and image-only PDF pages
+  ocr:
+    engine: tesseract          # tesseract | none
+    lang: eng
+
+# ── Topics ────────────────────────────────────────────────
+# When enabled, retrieval can be scoped to a single topic (subject/exam)
+# by filtering chunk metadata. Chunks are tagged at ingestion time based
+# on the subfolder under data/raw/<topic>/... or an explicit upload tag.
+topics:
+  enabled: true
+  filter_overfetch_multiplier: 4   # fetch k * multiplier before filtering by topic
+
+# ── Modes (rag/rag.py) ────────────────────────────────────
+# "explain" = normal Q&A pipeline (hybrid retrieval + rerank + guardrail).
+# "revise"  = broad-coverage revision notes for a whole topic. Pulls every
+#             chunk tagged with the topic (not just top-k similarity matches)
+#             since "give me everything important" isn't a similarity search.
+# "practice" = generates practice Q&A for a whole topic, same broad-coverage
+#              retrieval as revise.
+modes:
+  revise:
+    max_tokens: 3072
+    temperature: 0.3
+    # If the topic's total chunk text fits under this many characters, do one
+    # LLM pass. Otherwise map-reduce: compress in batches, then merge.
+    single_pass_char_budget: 12000
+    batch_char_budget: 6000
+  practice:
+    max_tokens: 2048
+    temperature: 0.4
+    single_pass_char_budget: 12000
+    batch_char_budget: 6000
+    num_questions: 8
+
+# ── Evaluation ────────────────────────────────────────────
+evaluation:
+  faithfulness_enabled: true       # LLM-judge groundedness score, reuses evaluator agent
+
+# ── API (api/main.py) ────────────────────────────────────
+api:
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://127.0.0.1:3000"
+    - "https://YOUR-PROJECT-NAME.vercel.app"   # replace with your real Vercel URL
+  max_upload_mb: 20

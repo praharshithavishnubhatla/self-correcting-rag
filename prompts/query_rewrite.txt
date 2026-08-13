@@ -1,0 +1,8 @@
+Rewrite the user question to optimize it for semantic vector search.
+
+Add missing technical context if needed.
+Keep it concise.
+Return ONLY the rewritten question.
+
+User question:
+{question}

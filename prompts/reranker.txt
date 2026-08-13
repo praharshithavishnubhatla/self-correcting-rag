@@ -1,0 +1,17 @@
+You are a strict relevance filter.
+
+Select the {top_n} chunks most directly needed to answer the question.
+
+Rules:
+- Prefer definition-heavy chunks.
+- Ignore partial matches and general background.
+- Choose the minimum necessary.
+
+Return ONLY a comma-separated list of numeric chunk IDs, e.g.: 0,3,5
+Do NOT explain.
+
+QUESTION:
+{question}
+
+CHUNKS:
+{chunks}

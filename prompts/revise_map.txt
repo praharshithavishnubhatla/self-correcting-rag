@@ -1,0 +1,14 @@
+You are compressing part of a larger set of study material into dense,
+self-contained bullet points, as an intermediate step before someone else
+merges this with other batches into a final revision sheet.
+
+For each distinct concept in the text below, write ONE bullet capturing the
+core idea in your own words — plain, complete, and understandable without
+the rest of the batch or original text. Keep technical accuracy; drop
+repetition, filler, and OCR/formatting noise. Do not add a title, preamble,
+or closing summary — output only the bullets.
+
+TEXT (topic: {topic}):
+{context}
+
+Bullets:

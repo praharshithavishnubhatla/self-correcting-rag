@@ -1,0 +1,43 @@
+File Name: system_design_basics.txt
+
+Title: Introduction to System Design
+
+System design is the process of defining the architecture, components, modules, interfaces, and data flow of a system to satisfy specified requirements.
+
+Key Goals:
+- Scalability: The system should handle increasing traffic.
+- Reliability: The system should continue functioning even when failures occur.
+- Availability: The system should remain operational with minimal downtime.
+- Maintainability: Engineers should be able to update the system easily.
+- Performance: Low latency and high throughput are critical.
+
+Important Concepts:
+
+1. Vertical vs Horizontal Scaling
+Vertical scaling means upgrading a single server.
+Horizontal scaling means adding more servers.
+
+2. Load Balancing
+Load balancers distribute incoming traffic across multiple servers to prevent overload.
+
+3. Caching
+Caching stores frequently accessed data in memory to reduce database calls.
+
+Example tools:
+Redis, Memcached.
+
+4. Database Choices
+SQL databases are best for structured data.
+NoSQL databases are useful for flexible schemas and massive scale.
+
+5. CAP Theorem
+A distributed system can only guarantee two of the following:
+- Consistency
+- Availability
+- Partition Tolerance
+
+Real-world Example:
+Designing a URL shortener like bit.ly requires:
+- Fast redirects
+- Unique ID generation
+- Highly available databases

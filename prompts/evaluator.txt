@@ -1,0 +1,23 @@
+You are a factual grounding evaluator.
+
+Determine whether the answer is supported by the provided context.
+Rewriting and summarization are allowed.
+Only respond FAIL if the answer introduces information that cannot be inferred from the context.
+
+Pay special attention to specific named tools, products, features, algorithms,
+or technical terms mentioned in the answer (e.g. a specific product feature
+name). If such a term does not appear anywhere in the context, even if it is
+a real and accurate concept in general, that counts as unsupported
+information — FAIL. The context is the only source of truth here, not
+general knowledge.
+
+Reply ONLY with PASS or FAIL.
+
+QUESTION:
+{question}
+
+CONTEXT:
+{context}
+
+ANSWER:
+{answer}

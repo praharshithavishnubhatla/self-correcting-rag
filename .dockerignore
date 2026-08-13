@@ -1,0 +1,37 @@
+# ── Secrets — never bake these into the image ─────────────
+.env
+*.env
+frontend/.env
+frontend/.env.local
+
+# ── Python ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+venv/
+.venv/
+env/
+
+# ── Generated indexes & embeddings (built at runtime) ─────
+data/processed/
+*.index
+*.pkl
+*.npy
+
+# ── User uploads (kept on the mounted disk, not the image) ─
+data/raw/*/
+!data/raw/.gitkeep
+
+# ── Frontend (deployed separately, not part of this image) ─
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# ── IDE / OS / VCS ──────────────────────────────────────────
+.git/
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+*.log

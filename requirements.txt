@@ -1,0 +1,28 @@
+# ── Your existing dependencies (unchanged) ───────────────
+faiss-cpu==1.13.2
+sentence-transformers==3.0.1
+scikit-learn==1.5.1
+numpy==1.26.4
+python-dotenv==1.0.1
+groq==0.9.0
+tqdm==4.66.4
+httpx==0.27.0
+rank-bm25==0.2.2
+
+# ── New additions ─────────────────────────────────────────
+pyyaml>=6.0           # config.yaml loading
+streamlit>=1.35.0     # Streamlit UI (app.py) — kept for quick local demos
+pytest>=8.0.0         # test runner
+pytest-cov>=5.0.0     # coverage reports
+
+# ── API (api/main.py) ────────────────────────────────────
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9   # required by FastAPI for file uploads
+
+# ── Multi-format ingestion ───────────────────────────────
+pypdf>=4.2.0               # PDF text extraction
+python-docx>=1.1.0         # DOCX parsing
+pillow>=10.3.0             # image loading for OCR
+pytesseract>=0.3.10        # OCR engine wrapper (requires system tesseract-ocr)
+pdf2image>=1.17.0          # optional: OCR fallback for scanned PDF pages (requires poppler)

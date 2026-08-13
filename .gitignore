@@ -1,0 +1,46 @@
+# ── Python ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# ── Virtual environments ──────────────────────────────────
+venv/
+.venv/
+env/
+
+# ── Secrets ───────────────────────────────────────────────
+.env
+*.env
+
+# ── Generated indexes & embeddings (DO NOT COMMIT) ────────
+data/processed/
+*.index
+*.pkl
+*.npy
+
+# ── Evaluation output ─────────────────────────────────────
+data/eval_results.json
+
+# ── IDE / OS ──────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ── Logs ─────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Frontend (Next.js) ────────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env
+frontend/.env.local
+
+# ── Uploaded raw documents (user data, not committed) ─────
+data/raw/*/
+!data/raw/.gitkeep

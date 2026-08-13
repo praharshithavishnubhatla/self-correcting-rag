@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: exam-rag-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter                # avoid free tier for a live resume link — no cold starts
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false               # set manually in Render dashboard
+      - key: API_KEY
+        generateValue: true       # random value; required by /ingest, /ingest/batch, /eval
+      # DATABASE_URL intentionally omitted — nothing in the code reads it yet.
+      # Add it back (with a `databases:` block below) if you wire up Postgres
+      # for topics/metadata persistence later.
+    disk:
+      name: exam-rag-data
+      mountPath: /app/data
+      sizeGB: 5                   # holds data/raw uploads + FAISS/BM25/pickle indexes
+    healthCheckPath: /health
