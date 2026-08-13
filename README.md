@@ -4,6 +4,12 @@ A modular Retrieval-Augmented Generation (RAG) pipeline with hybrid retrieval, s
 
 This project answers questions using information from your own notes, cheatsheets, and saved posts (e.g. Instagram/LinkedIn screenshots) instead of relying purely on an LLM's general knowledge. It retrieves relevant chunks from your material, generates an answer grounded in that material, and verifies the answer before returning it — so you get answers that match *your* course, *your* cheat sheet phrasing, and *your* saved references, with sources attached.
 
+---
+   title: exam-rag-api
+   sdk: docker
+   app_port: 7860
+   ---
+   
 **New in this fork** (on top of the original self-correcting pipeline):
 - Multi-format ingestion: `.txt`, `.md`, `.pdf`, `.docx`, and OCR'd images (`.png`/`.jpg`) — see `indexes/ingestion.py`
 - Topic-scoped retrieval: chunks are tagged by subject folder (`data/raw/<topic>/...`) so an OS question doesn't pull DBMS notes
