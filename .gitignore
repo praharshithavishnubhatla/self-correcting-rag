@@ -14,6 +14,8 @@ env/
 # ── Secrets ───────────────────────────────────────────────
 .env
 *.env
+.env.local
+.env.*.local
 
 # ── Generated indexes & embeddings (DO NOT COMMIT) ────────
 data/processed/
