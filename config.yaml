@@ -125,5 +125,5 @@ api:
   cors_origins:
     - "http://localhost:3000"
     - "http://127.0.0.1:3000"
-    - "https://YOUR-PROJECT-NAME.vercel.app"   # replace with your real Vercel URL
+    - "https://YOUR_USERNAME-exam-rag-frontend.hf.space"   # replace YOUR_USERNAME
   max_upload_mb: 20
