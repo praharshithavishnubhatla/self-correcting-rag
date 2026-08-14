@@ -4,12 +4,6 @@ A modular Retrieval-Augmented Generation (RAG) pipeline with hybrid retrieval, s
 
 This project answers questions using information from your own notes, cheatsheets, and saved posts (e.g. Instagram/LinkedIn screenshots) instead of relying purely on an LLM's general knowledge. It retrieves relevant chunks from your material, generates an answer grounded in that material, and verifies the answer before returning it — so you get answers that match *your* course, *your* cheat sheet phrasing, and *your* saved references, with sources attached.
 
----
-   title: exam-rag-api
-   sdk: docker
-   app_port: 7860
-   ---
-   
 **New in this fork** (on top of the original self-correcting pipeline):
 - Multi-format ingestion: `.txt`, `.md`, `.pdf`, `.docx`, and OCR'd images (`.png`/`.jpg`) — see `indexes/ingestion.py`
 - Topic-scoped retrieval: chunks are tagged by subject folder (`data/raw/<topic>/...`) so an OS question doesn't pull DBMS notes
@@ -18,6 +12,25 @@ This project answers questions using information from your own notes, cheatsheet
 - `api/` — a FastAPI wrapper exposing `/ask`, `/ingest`, `/topics`, `/eval` for the frontend (or any client)
 - `frontend/` — a minimal Next.js + Tailwind UI: pick a topic, drop in files, ask questions
 - `Dockerfile` + `render.yaml` for deployment (see [Deployment](#deployment))
+
+---
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/praharshithavishnubhatla/self-correcting-rag.git
+cd self-correcting-rag
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env               # then add your GROQ_API_KEY — free at console.groq.com
+python main.py --query "explain scalability"
+```
+First run auto-builds the indexes from `data/raw/` (~30s). For the full API + UI experience, see [Running the API + Frontend](#running-the-api--frontend) below.
+
+<!-- TODO: add a screenshot or short GIF of the UI here, e.g.
+![UI screenshot](docs/screenshot.png) -->
 
 ---
 
@@ -235,14 +248,15 @@ pytest tests/ -v
 
 ## Benchmark Results
 
-Run against 10 questions from the knowledge base:
+Run against 10 questions from the knowledge base ([full output](#example-query) style, one run):
 
 | Metric | Score |
 |---|---|
-| Avg keyword recall | 0.89 |
+| Avg keyword recall | 0.91 (10/10 scored ≥ 0.4) |
 | Guardrail PASS rate | 100% |
 | Evaluator PASS rate | 100% |
-| Avg latency | ~3–6s |
+| Avg latency | 19.1s |
+| Errors | 0 |
 
 ---
 
@@ -305,24 +319,24 @@ Open `http://localhost:3000` — pick a topic, drop in a note/cheatsheet/screens
 
 ## Deployment
 
-**Backend + Postgres → Render**, using the included `render.yaml` blueprint:
+This project is configured for deployment but **not currently hosted live** — the setup below is included to show the infra is production-ready, not just a local script. Everything runs locally with the commands in [Installation](#installation) and [Running the API + Frontend](#running-the-api--frontend) above.
+
+**Backend → Render**, using the included `render.yaml` blueprint (free web service plan, Docker runtime):
 
 ```
 # from the Render dashboard: New → Blueprint → point at this repo
 ```
 
-This provisions a Docker web service (built from `Dockerfile`, which installs `tesseract-ocr` and `poppler-utils` for OCR), a persistent disk mounted at `/app/data` (so uploaded files and FAISS/BM25 indexes survive redeploys), and a managed Postgres instance. Set `GROQ_API_KEY` in the Render dashboard after the first deploy.
+This provisions a Docker web service built from `Dockerfile` (installs `tesseract-ocr` and `poppler-utils` for OCR). On Render's free tier there's no persistent disk, so `data/processed/` (FAISS/BM25 indexes) doesn't survive a redeploy — a startup hook in `api/main.py` rebuilds the index from `data/raw` automatically on boot if it's missing. Set `GROQ_API_KEY` in the Render dashboard after the first deploy. Free tier services sleep after 15 minutes idle and cold-start in ~30–60s on the next request.
 
-Avoid Render's free tier for a link you're putting on a resume — services spin down after 15 minutes idle and cold-start in ~30-60s. The `starter` plan in `render.yaml` avoids this.
-
-**Frontend → Vercel** (recommended over Render for this piece — Vercel is purpose-built for Next.js):
+**Frontend → Vercel** (purpose-built for Next.js, free Hobby tier):
 
 ```
 cd frontend
 vercel
 ```
 
-Set `NEXT_PUBLIC_API_URL` to your deployed Render backend URL in the Vercel project's environment variables.
+Set `NEXT_PUBLIC_API_URL` to your deployed Render backend URL, and update `api.cors_origins` in `config.yaml` to include your Vercel domain, before going live.
 
 ---
 
